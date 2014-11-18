@@ -4,6 +4,12 @@
 #
 
 node[:deploy].each do |application, deploy|
+  
+  Chef::Log.info("Configuring sidekiq for application #{application}")
+
+  settings = node[:sidekiq]
+  settings = settings[application] if settings
+  workers = (settings && settings[:workers]) ? settings[:workers] : 1
   process_name = "sidekiq_#{application}"
 
   template "#{deploy[:deploy_to]}/shared/scripts/sidekiq" do
