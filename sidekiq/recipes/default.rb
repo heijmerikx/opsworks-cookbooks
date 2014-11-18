@@ -15,17 +15,18 @@ node[:deploy].each do |application, deploy|
   end
 
   template "/etc/monit/conf.d/#{process_name}.monitrc" do
-    source "monitrc.conf.erb"
+    source "sidekiq.monitrc.erb"
     owner 'root'
     group 'root'
     mode 0644
-    variables(
-      :env => deploy[:rails_env],
-      :path => deploy[:deploy_to],
-      :user => deploy[:user],
-      :group => deploy[:group],
-      :process_name => process_name
-    )
+    # variables(
+    #   :env => deploy[:rails_env],
+    #   :path => deploy[:deploy_to],
+    #   :user => deploy[:user],
+    #   :group => deploy[:group],
+    #   :process_name => process_name
+    # )
+    variables({ :application => application, :deploy => deploy, :workers => workers })
   end
 
   execute "ensure-sidekiq-is-setup-with-monit" do
