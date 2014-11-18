@@ -6,6 +6,14 @@
 node[:deploy].each do |application, deploy|
   process_name = "sidekiq_#{application}"
 
+  template "#{deploy[:deploy_to]}/shared/scripts/sidekiq" do
+    mode '0755'
+    owner deploy[:user]
+    group deploy[:group]
+    source "sidekiq.service.erb"
+    variables(:deploy => deploy, :application => application)
+  end
+
   template "/etc/monit/conf.d/#{process_name}.monitrc" do
     source "monitrc.conf.erb"
     owner 'root'
